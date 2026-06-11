@@ -1,77 +1,53 @@
-import db from "../models/index.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { registerUser, loginUser, updateUser } from "../services/user.service.js";
+import { HTTP_STATUS } from "../utils/httpStatus.js";
 
 // REGISTER USER
-export const registerUser = async (req, res) => {
-  try {
-    console.log(req.body); 
+export const registerUserController = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
 
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({
-        message: "username and password required"
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await db.User.create({
-      username: username,
-      password_hash: hashedPassword
-    });
-
-    res.status(201).json({
-      message: "User registered successfully",
-      user
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: error.message
+  if (!username || !password) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      message: "Username and password required",
     });
   }
-};
+
+  const user = await registerUser(username, password);
+
+  res.status(HTTP_STATUS.CREATED).json({
+    message: "User registered successfully",
+    user,
+  });
+});
 
 // LOGIN USER
-export const loginUser = async (req, res) => {
-  try {
-    const { username, password } = req.body;
+export const loginUserController = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
 
-    const user = await db.User.findOne({
-      where: { username }
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found"
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-
-    if (!isMatch) {
-      return res.status(401).json({
-        message: "Wrong password"
-      });
-    }
-
-    const token = jwt.sign(
-      { id: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    res.status(200).json({
-      message: "Login successful",
-      token
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
+  if (!username || !password) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      message: "Username and password required",
     });
   }
-};
+
+  const { token, user } = await loginUser(username, password);
+
+  res.status(HTTP_STATUS.OK).json({
+    message: "Login successful",
+    token,
+    user,
+  });
+});
+
+// UPDATE USER
+export const updateUserController = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = await updateUser(req.user.id, { username, password });
+
+  res.status(HTTP_STATUS.OK).json({
+    message: "Profile updated successfully",
+    user,
+  });
+});

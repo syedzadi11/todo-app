@@ -8,8 +8,8 @@ import Navbar from "../components/Navbar";
 import StatsBar from "../components/StatsBar";
 import TaskCard from "../components/TaskCard";
 import EditModal from "../components/EditModal";
-import BottomNav from "../components/BottomNav";
-import { useTasks } from "../hooks/useTasks";
+import BottomNav from "../components/button-nav.component";
+import { useTasks } from "../hooks/use-tasks.hook";
 import { getGreeting } from "../utils/helpers";
 
 export default function Dashboard() {

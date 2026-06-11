@@ -7,7 +7,7 @@ import StatsBar from "../components/StatsBar";
 import TaskForm from "../components/TaskForm";
 import TaskCard from "../components/TaskCard";
 import EditModal from "../components/EditModal";
-import BottomNav from "../components/BottomNav";
+import BottomNav from "../components/button-nav.component";
 import { getTasks, createTask, updateTask, deleteTask } from "../api/tasks";
 
 export default function Tasks() {

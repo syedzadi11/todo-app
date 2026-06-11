@@ -1,77 +1,76 @@
+
+
 import {
   createTask,
   getAllTasks,
   getTaskById,
   updateTask,
-  deleteTask
+  deleteTask,
 } from "../services/todo.service.js";
-
 import { createTodoSchema } from "../validations/todo.validation.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { HTTP_STATUS } from "../utils/httpStatus.js";
 
 // CREATE TASK
 export const createTodo = asyncHandler(async (req, res) => {
-
   const { error } = createTodoSchema.validate(req.body);
-
   if (error) {
-    return res.status(400).json({
-      message: error.details[0].message
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      message: error.details[0].message,
     });
   }
 
   const task = await createTask({
     ...req.body,
-    userId: req.user.id   
+    userId: req.user.id,
   });
 
-  res.status(201).json(task);
+  res.status(HTTP_STATUS.CREATED).json(task);
 });
 
-
-//  GET ALL TASKS 
+// GET ALL TASKS
 export const getTodos = asyncHandler(async (req, res) => {
-
-  const tasks = await getAllTasks(req.user.id); 
-
-  res.status(200).json(tasks);
+  const tasks = await getAllTasks(req.user.id);
+  res.status(HTTP_STATUS.OK).json(tasks);
 });
 
-
-// GET TASK BY ID 
+// GET TASK BY ID
 export const getTodoById = asyncHandler(async (req, res) => {
-
   const task = await getTaskById(req.params.id);
 
   if (!task || task.userId !== req.user.id) {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      message: "Task not found",
+    });
   }
 
-  res.status(200).json(task);
+  res.status(HTTP_STATUS.OK).json(task);
 });
 
-
-// UPDATE TASK 
+// UPDATE TASK
 export const updateTodo = asyncHandler(async (req, res) => {
-
   const task = await updateTask(req.params.id, req.user.id, req.body);
 
   if (!task) {
-    return res.status(404).json({ message: "Task not found or unauthorized" });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      message: "Task not found or unauthorized",
+    });
   }
 
-  res.status(200).json(task);
+  res.status(HTTP_STATUS.OK).json(task);
 });
 
-
-// DELETE TASK 
+// DELETE TASK
 export const deleteTodo = asyncHandler(async (req, res) => {
-
   const task = await deleteTask(req.params.id, req.user.id);
 
   if (!task) {
-    return res.status(404).json({ message: "Task not found or unauthorized" });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      message: "Task not found or unauthorized",
+    });
   }
 
-  res.status(200).json({ message: "Task deleted successfully" });
+  res.status(HTTP_STATUS.OK).json({
+    message: "Task deleted successfully",
+  });
 });

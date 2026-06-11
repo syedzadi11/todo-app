@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { Camera, User, Lock, Calendar, CheckCircle, Trophy, Target, Zap } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import BottomNav from "../components/BottomNav";
+import BottomNav from "../components/button-nav.component";
 import { getTasks } from "../api/tasks";
 import { uploadAvatar, getAvatar } from "../services/uploadService";
+import { updateUserProfile } from "../api/users";
 
 export default function Profile() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,7 +16,9 @@ export default function Profile() {
   const [avatar, setAvatar] = useState(getAvatar());
   const [uploading, setUploading] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [username, setUsername] = useState("Syeda");
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || "Syeda"
+  );
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -42,9 +45,21 @@ export default function Profile() {
     }
   }
 
-  function handleSave() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  async function handleSave() {
+    try {
+      const updates = {};
+      if (username) updates.username = username;
+
+      await updateUserProfile(updates);
+
+      // save in localStorage
+      localStorage.setItem("username", username);
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      alert("Failed to Save: " + err.message);
+    }
   }
 
   const total = tasks.length;

@@ -1,3 +1,4 @@
+
 import {
   getTasks,
   createTask,
@@ -5,63 +6,51 @@ import {
   deleteTask,
   getTaskById,
 } from "../api/tasks";
-import { getToken } from "./authService";
-import { saveTaskExtras, deleteTaskExtras, getTaskExtras } from "../utils/helpers";
+import { getTaskExtras, saveTaskExtras, deleteTaskExtras } from "../utils/helpers";
 
-
+// Get all tasks with extras
 export async function fetchAllTasks() {
-  const token = getToken();
-  const data = await getTasks(token);
+  const data = await getTasks();
   const tasks = Array.isArray(data) ? data : data.tasks || [];
-
- 
   return tasks.map((t) => ({
     ...t,
     ...getTaskExtras(t.id),
   }));
 }
 
-//single task 
+// Get single task
 export async function fetchTaskById(id) {
-  const token = getToken();
-  const data = await getTaskById(token, id);
+  const data = await getTaskById(id);
   return data.task || data;
 }
 
-// New task create
+// Add task
 export async function addTask({ title, description, category, priority, dueDate, dueTime, reminder }) {
-  const token = getToken();
-  const data = await createTask(token, title, description);
+  const data = await createTask(title, description);
   const newTask = data.task || data;
-
-  // Extras save 
   saveTaskExtras(newTask.id, { category, priority, dueDate, dueTime, reminder });
-
   return { ...newTask, category, priority, dueDate, dueTime, reminder };
 }
 
-// Task update 
+// Edit task
 export async function editTask(id, updates) {
-  const token = getToken();
-  const data = await updateTask(token, id, updates);
+  const data = await updateTask(id, updates);
   return data.task || data;
 }
 
-// Task complete/incomplete toggle
+// Toggle task
 export async function toggleTask(task) {
-  const token = getToken();
-  const data = await updateTask(token, task.id, { is_completed: !task.is_completed });
+  const data = await updateTask(task.id, { is_completed: !task.is_completed });
   return data.task || data;
 }
 
-// Task delete 
+// Delete task
 export async function removeTask(id) {
-  const token = getToken();
-  await deleteTask(token, id);
+  await deleteTask(id);
   deleteTaskExtras(id);
 }
 
-// Tasks filter 
+// Filter tasks
 export function filterTasks(tasks, { filter, categoryFilter, searchQuery }) {
   return tasks
     .filter((t) =>

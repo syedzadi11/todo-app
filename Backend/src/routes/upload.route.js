@@ -5,10 +5,10 @@ import { authenticateToken } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Image kahan save ho aur kya naam mile
+// image save and its name
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // uploads folder mein save hoga
+    cb(null, "uploads/"); // save in uploads folder 
   },
   filename: (req, file, cb) => {
     const uniqueName = `${req.user.id}-${Date.now()}${path.extname(file.originalname)}`;
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// Sirf images allow karo
+//  allow image only
 const upload = multer({
   storage,
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
