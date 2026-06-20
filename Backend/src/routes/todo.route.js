@@ -1,4 +1,5 @@
 import { authenticateToken } from "../middlewares/auth.middleware.js";
+import { validate } from "../middlewares/validate.middleware.js";
 import express from "express";
 import {
   createTodo,
@@ -7,21 +8,24 @@ import {
   updateTodo,
   deleteTodo
 } from "../controllers/todo.controller.js";
+import { createTodoSchema, updateTodoSchema } from "../validations/todo.validation.js";
 
 const router = express.Router();
 
 // Create Task
-router.post("/tasks", authenticateToken, createTodo);
+router.post("/", authenticateToken, validate(createTodoSchema), createTodo);
 
 // Get All Tasks
-router.get("/tasks", authenticateToken, getTodos);
+router.get("/", authenticateToken, getTodos);
 
 // Get Task By ID
-router.get("/tasks/:id", authenticateToken, getTodoById);
+router.get("/:id", authenticateToken, getTodoById);
 
 // Update Task
-router.put("/tasks/:id", authenticateToken, updateTodo);
+router.put("/:id", authenticateToken, validate(updateTodoSchema), updateTodo);
+
 // Delete Task
-router.delete("/tasks/:id", authenticateToken, deleteTodo);
+router.delete("/:id", authenticateToken, deleteTodo);
 
 export default router;
+

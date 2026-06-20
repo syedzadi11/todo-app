@@ -11,7 +11,7 @@ export function useAuth() {
   // Login
   async function login(username, password) {
     if (!username || !password) {
-      setError("Username aur password daalo");
+      setError("Enter Username and password");
       return;
     }
     const success = await handleLogin(username, password);
@@ -21,7 +21,7 @@ export function useAuth() {
   // Register
   async function registerUser(username, password) {
     if (!username || !password) {
-      setError("Username aur password daalo");
+      setError("Enter Username and password");
       return false;
     }
     setRegisterLoading(true);

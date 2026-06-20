@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import BottomNav from "../components/button-nav.component";
+import BottomNav from "../components/ButtonNav";
 import { getTasks } from "../api/tasks";
 
 export default function StatsPage() {

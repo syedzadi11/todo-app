@@ -1,4 +1,6 @@
+
 import axios from "axios";
+import { logout } from "../services/authService";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -18,7 +20,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
+      logout();
       window.location.href = "/get-started";
     }
     return Promise.reject(error);

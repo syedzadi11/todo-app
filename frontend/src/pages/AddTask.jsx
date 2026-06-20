@@ -34,21 +34,32 @@ export default function AddTask() {
   ];
 
   async function handleSubmit() {
-    if (!title.trim()) { setError("Title zaroori hai!"); return; }
-    if (title.trim().length < 3) { setError("Title 3 characters se zyada hona chahiye!"); return; }
-    if (reminder && (!dueDate || !dueTime)) { setError("Reminder ke liye date aur time dono select karo!"); return; }
+    if (!title.trim()) { setError("Title is required!"); return; }
+    if (title.trim().length < 3) { setError("Title must be more than 3 characters!"); return; }
+    if (reminder && (!dueDate || !dueTime)) { setError("For a reminder, select both date and time!"); return; }
 
     setLoading(true);
     setError("");
 
-    const success = await handleAdd({ title: title.trim(), description: description.trim(), category, priority, dueDate, dueTime, reminder });
+    const success = await handleAdd({
+      title: title.trim(),
+      description: description.trim(),
+      category,
+      priority,
+      dueDate,
+      dueTime,
+      reminder
+    });
 
     if (success) {
-      if (reminder && dueDate && dueTime) scheduleReminder(title.trim(), dueDate, dueTime);
+      if (reminder && dueDate && dueTime) {
+        scheduleReminder(title.trim(), dueDate, dueTime);
+      }
       navigate("/dashboard");
     } else {
-      setError("Task add nahi hua!");
+      setError("Task was not added!");
     }
+
     setLoading(false);
   }
 
@@ -56,12 +67,20 @@ export default function AddTask() {
     <div className="min-h-screen bg-black">
       <div className="bg-black border-b border-gray-800 sticky top-0 z-10">
         <div className="flex items-center px-4 py-4 gap-3 max-w-xl mx-auto">
-          <button onClick={() => navigate(-1)} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-900">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-900"
+          >
             <ArrowLeft size={20} className="text-gray-400" />
           </button>
+
           <h1 className="text-lg font-black text-white flex-1">Add Task</h1>
-          <button onClick={handleSubmit} disabled={loading}
-            className="bg-yellow-400 text-black px-4 py-2 rounded-xl text-sm font-bold hover:bg-yellow-300 disabled:opacity-50">
+
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="bg-yellow-400 text-black px-4 py-2 rounded-xl text-sm font-bold hover:bg-yellow-300 disabled:opacity-50"
+          >
             {loading ? "Saving..." : "Save"}
           </button>
         </div>
@@ -76,11 +95,22 @@ export default function AddTask() {
 
         {/* Title */}
         <div className="bg-gray-950 border border-gray-800 rounded-3xl p-5 mb-4">
-          <input className="w-full text-base font-semibold text-white outline-none placeholder-gray-700 bg-transparent mb-3"
-            placeholder="Task Title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
+          <input
+            className="w-full text-base font-semibold text-white outline-none placeholder-gray-700 bg-transparent mb-3"
+            placeholder="Task Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            autoFocus
+          />
+
           <div className="border-t border-gray-800 pt-3">
-            <textarea className="w-full text-sm text-gray-400 outline-none placeholder-gray-700 resize-none bg-transparent"
-              placeholder="Description (Optional)" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+            <textarea
+              className="w-full text-sm text-gray-400 outline-none placeholder-gray-700 resize-none bg-transparent"
+              placeholder="Description (Optional)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+            />
           </div>
         </div>
 
@@ -92,12 +122,20 @@ export default function AddTask() {
             </div>
             <span className="text-sm font-bold text-white">Category</span>
           </div>
+
           <div className="grid grid-cols-2 gap-2">
             {categories.map((cat) => (
-              <button key={cat.value} onClick={() => setCategory(cat.value)}
+              <button
+                key={cat.value}
+                onClick={() => setCategory(cat.value)}
                 className={`py-2.5 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
-                  category === cat.value ? cat.active : "bg-gray-900 text-gray-600 border-transparent hover:border-gray-700"
-                }`}>{cat.label}</button>
+                  category === cat.value
+                    ? cat.active
+                    : "bg-gray-900 text-gray-600 border-transparent hover:border-gray-700"
+                }`}
+              >
+                {cat.label}
+              </button>
             ))}
           </div>
         </div>
@@ -110,13 +148,23 @@ export default function AddTask() {
             </div>
             <span className="text-sm font-bold text-white">Priority</span>
           </div>
+
           <div className="flex gap-2">
             {priorities.map((p) => (
-              <button key={p.value} onClick={() => setPriority(p.value)}
+              <button
+                key={p.value}
+                onClick={() => setPriority(p.value)}
                 className={`flex-1 py-2.5 rounded-2xl text-sm font-semibold border-2 transition-all flex items-center justify-center gap-1.5 ${
-                  priority === p.value ? p.active : "bg-gray-900 text-gray-600 border-transparent hover:border-gray-700"
-                }`}>
-                <div className={`w-2 h-2 rounded-full ${priority === p.value ? "bg-black" : p.dot}`} />
+                  priority === p.value
+                    ? p.active
+                    : "bg-gray-900 text-gray-600 border-transparent hover:border-gray-700"
+                }`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    priority === p.value ? "bg-black" : p.dot
+                  }`}
+                />
                 {p.label}
               </button>
             ))}
@@ -131,17 +179,27 @@ export default function AddTask() {
             </div>
             <span className="text-sm font-bold text-white">Due Date & Time</span>
           </div>
+
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between bg-gray-900 rounded-2xl px-4 py-3">
               <span className="text-sm text-gray-600">Date</span>
-              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)}
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
                 className="text-sm text-yellow-400 font-semibold outline-none bg-transparent"
-                min={new Date().toISOString().split("T")[0]} />
+                min={new Date().toISOString().split("T")[0]}
+              />
             </div>
+
             <div className="flex items-center justify-between bg-gray-900 rounded-2xl px-4 py-3">
               <span className="text-sm text-gray-600">Time</span>
-              <input type="time" value={dueTime} onChange={(e) => setDueTime(e.target.value)}
-                className="text-sm text-yellow-400 font-semibold outline-none bg-transparent" />
+              <input
+                type="time"
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
+                className="text-sm text-yellow-400 font-semibold outline-none bg-transparent"
+              />
             </div>
           </div>
         </div>
@@ -153,23 +211,41 @@ export default function AddTask() {
               <div className="w-9 h-9 bg-gray-900 rounded-xl flex items-center justify-center">
                 <Bell size={16} className="text-yellow-400" />
               </div>
+
               <div>
                 <p className="text-sm font-bold text-white">Reminder</p>
                 <p className="text-xs text-gray-600">
-                  {reminder && dueDate && dueTime ? `${dueDate} at ${dueTime}` : "Date aur time select karo"}
+                  {reminder && dueDate && dueTime
+                    ? `${dueDate} at ${dueTime}`
+                    : "Select date and time"}
                 </p>
               </div>
             </div>
-            <button onClick={() => setReminder(!reminder)}
-              className={`w-12 h-6 rounded-full transition-all duration-300 relative ${reminder ? "bg-yellow-400" : "bg-gray-800"}`}>
-              <div className={`w-5 h-5 rounded-full shadow-md absolute top-0.5 transition-all duration-300 ${reminder ? "left-6 bg-black" : "left-0.5 bg-gray-600"}`} />
+
+            <button
+              onClick={() => setReminder(!reminder)}
+              className={`w-12 h-6 rounded-full transition-all duration-300 relative ${
+                reminder ? "bg-yellow-400" : "bg-gray-800"
+              }`}
+            >
+              <div
+                className={`w-5 h-5 rounded-full shadow-md absolute top-0.5 transition-all duration-300 ${
+                  reminder ? "left-6 bg-black" : "left-0.5 bg-gray-600"
+                }`}
+              />
             </button>
           </div>
         </div>
 
-        <button onClick={handleSubmit} disabled={loading}
-          className="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-2xl px-6 py-4 hover:border-yellow-400 transition-all group disabled:opacity-50">
-          <span className="text-white font-semibold text-sm">{loading ? "Adding..." : "Add Task"}</span>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-2xl px-6 py-4 hover:border-yellow-400 transition-all group disabled:opacity-50"
+        >
+          <span className="text-white font-semibold text-sm">
+            {loading ? "Adding..." : "Add Task"}
+          </span>
+
           <div className="w-9 h-9 bg-yellow-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
             <span className="text-black font-bold text-lg">→</span>
           </div>

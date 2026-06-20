@@ -1,6 +1,4 @@
 
-
-
 export default function StatsBar({ tasks }) {
   const total = tasks.length;
   const done = tasks.filter((t) => t.is_completed).length;

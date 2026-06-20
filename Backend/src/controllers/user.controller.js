@@ -1,7 +1,7 @@
 
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../middlewares/async.middleware.js";
 import { registerUser, loginUser, updateUser } from "../services/user.service.js";
-import { HTTP_STATUS } from "../utils/httpStatus.js";
+import { HTTP_STATUS } from "../constants/http-status.constant.js";
 
 // REGISTER USER
 export const registerUserController = asyncHandler(async (req, res) => {

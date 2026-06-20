@@ -10,44 +10,68 @@ import { getTaskExtras, saveTaskExtras, deleteTaskExtras } from "../utils/helper
 
 // Get all tasks with extras
 export async function fetchAllTasks() {
-  const data = await getTasks();
-  const tasks = Array.isArray(data) ? data : data.tasks || [];
-  return tasks.map((t) => ({
-    ...t,
-    ...getTaskExtras(t.id),
-  }));
+  try {
+    const data = await getTasks();
+    const tasks = Array.isArray(data) ? data : data.tasks || [];
+    return tasks.map((t) => ({
+      ...t,
+      ...getTaskExtras(t.id),
+    }));
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to load tasks.");
+  }
 }
 
 // Get single task
 export async function fetchTaskById(id) {
-  const data = await getTaskById(id);
-  return data.task || data;
+  try {
+    const data = await getTaskById(id);
+    return data.task || data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to load task.");
+  }
 }
 
 // Add task
 export async function addTask({ title, description, category, priority, dueDate, dueTime, reminder }) {
-  const data = await createTask(title, description);
-  const newTask = data.task || data;
-  saveTaskExtras(newTask.id, { category, priority, dueDate, dueTime, reminder });
-  return { ...newTask, category, priority, dueDate, dueTime, reminder };
+  try {
+    const data = await createTask(title, description);
+    const newTask = data.task || data;
+    saveTaskExtras(newTask.id, { category, priority, dueDate, dueTime, reminder });
+    return { ...newTask, category, priority, dueDate, dueTime, reminder };
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to add task.");
+  }
 }
 
 // Edit task
 export async function editTask(id, updates) {
-  const data = await updateTask(id, updates);
-  return data.task || data;
+  try {
+    const data = await updateTask(id, updates);
+    return data.task || data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to update task.");
+  }
 }
 
 // Toggle task
 export async function toggleTask(task) {
-  const data = await updateTask(task.id, { is_completed: !task.is_completed });
-  return data.task || data;
+  try {
+    const data = await updateTask(task.id, { is_completed: !task.is_completed });
+    return data.task || data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to update task.");
+  }
 }
 
 // Delete task
 export async function removeTask(id) {
-  await deleteTask(id);
-  deleteTaskExtras(id);
+  try {
+    await deleteTask(id);
+    deleteTaskExtras(id);
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to delete task.");
+  }
 }
 
 // Filter tasks

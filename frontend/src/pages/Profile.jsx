@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Camera, User, Lock, Calendar, CheckCircle, Trophy, Target, Zap } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import BottomNav from "../components/button-nav.component";
+import BottomNav from "../components/ButtonNav";
 import { getTasks } from "../api/tasks";
 import { uploadAvatar, getAvatar } from "../services/uploadService";
 import { updateUserProfile } from "../api/users";

@@ -1,5 +1,4 @@
 import db from "../models/index.js";
-
 const Todo = db.Todo;
 
 // CREATE
@@ -15,9 +14,14 @@ export const getAllTasks = async (userId) => {
 };
 
 // GET BY ID
-export const getTaskById = async (id) => {
-  return await Todo.findByPk(id);
+export const getTaskById = async (id, userId) => {
+  const task = await Todo.findOne({
+    where: { id, userId }
+  });
+
+  return task;
 };
+
 
 // UPDATE
 export const updateTask = async (id, userId, data) => {

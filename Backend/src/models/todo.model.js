@@ -1,3 +1,4 @@
+
 import { DataTypes } from "sequelize";
 
 export default (sequelize) => {
@@ -28,15 +29,12 @@ export default (sequelize) => {
       is_completed: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
-      },
-
-      created_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
       }
     },
     {
-      timestamps: false
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at"
     }
   );
 

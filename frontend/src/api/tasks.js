@@ -1,7 +1,4 @@
 
-
-
-
 import axiosInstance from "./axiosInstance";
 
 // Get All Tasks
