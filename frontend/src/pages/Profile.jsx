@@ -1,13 +1,14 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import { Camera, User, Lock, Calendar, CheckCircle, Trophy, Target, Zap } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import BottomNav from "../components/ButtonNav";
-import { getTasks } from "../api/tasks";
+import { fetchAllTasks } from "../services/taskService";
 import { uploadAvatar, getAvatar } from "../services/uploadService";
-import { updateUserProfile } from "../api/users";
+import { updateUserProfile } from "../services/authService";
 
 export default function Profile() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,21 +16,15 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
   const [avatar, setAvatar] = useState(getAvatar());
   const [uploading, setUploading] = useState(false);
-  const [tasks, setTasks] = useState([]);
+  // const [tasks, setTasks] = useState([]);
   const [username, setUsername] = useState(
     localStorage.getItem("username") || "Syeda"
   );
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await getTasks(token);
-        setTasks(Array.isArray(data) ? data : data.tasks || []);
-      } catch (err) {}
-    }
-    load();
-  }, [token]);
+  const { data: tasks = [] } = useQuery({
+  queryKey: ["tasks"],
+  queryFn: fetchAllTasks,
+});
+ 
 
   async function handleImageUpload(e) {
     const file = e.target.files[0];

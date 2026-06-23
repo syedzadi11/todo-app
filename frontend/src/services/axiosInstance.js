@@ -1,12 +1,11 @@
-
 import axios from "axios";
-import { logout } from "../services/authService";
+import { logout } from "./authService";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Automatically attach the token to every request
+// Automatically attach token
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -15,7 +14,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Automatically log out on a 401 error
+// Auto logout on 401
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {

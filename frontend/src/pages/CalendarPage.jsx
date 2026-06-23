@@ -1,32 +1,25 @@
 
 
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import BottomNav from "../components/ButtonNav";
-import { getTasks } from "../api/tasks";
+import { fetchAllTasks } from "../services/taskService";
 
 export default function CalendarPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [tasks, setTasks] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const token = localStorage.getItem("token");
+
+  const { data: tasks = [] } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: fetchAllTasks,
+  });
 
   const today = new Date();
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth();
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await getTasks(token);
-        setTasks(Array.isArray(data) ? data : data.tasks || []);
-      } catch (err) {}
-    }
-    load();
-  }, [token]);
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -53,7 +46,6 @@ export default function CalendarPage() {
               <p className="text-sm text-gray-600 mt-0.5">View tasks by date</p>
             </div>
 
-            {/* Calendar */}
             <div className="bg-gray-950 border border-gray-800 rounded-3xl p-5 mb-4">
               <div className="flex items-center justify-between mb-4">
                 <button onClick={() => setSelectedDate(new Date(year, month - 1, 1))} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-800 text-gray-500 text-lg">‹</button>
@@ -82,7 +74,6 @@ export default function CalendarPage() {
               </div>
             </div>
 
-            {/* Selected Tasks */}
             <div className="bg-gray-950 border border-gray-800 rounded-3xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-bold text-white">

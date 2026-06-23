@@ -1,13 +1,14 @@
 
+
+
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Calendar, Clock, Flag, Bell, Tag, Trash2, CheckCircle, FileText } from "lucide-react";
-import { getTaskById, updateTask, deleteTask } from "../api/tasks";
+import { fetchTaskById, editTask, removeTask } from "../services/taskService";
 
 export default function TaskDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -15,28 +16,25 @@ export default function TaskDetail() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await getTaskById(token, id);
+        const data = await fetchTaskById(id);
         setTask(data.task || data);
       } catch (err) { setError(err.message); }
       finally { setLoading(false); }
     }
     load();
-  }, [id, token]);
+  }, [id]);
 
   async function handleToggle() {
     try {
-      const data = await updateTask(token, id, { is_completed: !task.is_completed });
-      setTask(data.task || data);
+      const updated = await editTask(id, { is_completed: !task.is_completed });
+      setTask(updated.task || updated);
     } catch (err) { setError(err.message); }
   }
 
   async function handleDelete() {
-    if (!window.confirm("Yeh task delete karna chahti ho?")) return;
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
     try {
-      await deleteTask(token, id);
-      const extras = JSON.parse(localStorage.getItem("taskExtras") || "{}");
-      delete extras[id];
-      localStorage.setItem("taskExtras", JSON.stringify(extras));
+      await removeTask(id);
       navigate("/dashboard");
     } catch (err) { setError(err.message); }
   }
@@ -67,7 +65,7 @@ export default function TaskDetail() {
 
   if (error || !task) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      <p className="text-red-400 text-sm">{error || "Task nahi mila!"}</p>
+      <p className="text-red-400 text-sm">{error || "Task not found!"}</p>
     </div>
   );
 
@@ -86,7 +84,6 @@ export default function TaskDetail() {
       </div>
 
       <div className="p-4 max-w-xl mx-auto pb-10">
-        {/* Title Card */}
         <div className="bg-gray-950 border border-gray-800 rounded-3xl p-6 mb-4 text-center">
           <div className="w-16 h-16 bg-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">📋</span>
@@ -99,11 +96,9 @@ export default function TaskDetail() {
           </span>
         </div>
 
-        {/* Details */}
         <div className="bg-gray-950 border border-gray-800 rounded-3xl p-5 mb-4">
           <h3 className="text-sm font-bold text-white mb-4">Details</h3>
           <div className="flex flex-col divide-y divide-gray-800">
-
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
                 <Calendar size={16} className="text-yellow-400" />
@@ -175,7 +170,6 @@ export default function TaskDetail() {
           </div>
         </div>
 
-        {/* Mark Complete */}
         <button onClick={handleToggle}
           className={`w-full py-4 rounded-2xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2 mb-3 ${
             task.is_completed ? "bg-gray-900 text-gray-400 border border-gray-800" : "bg-yellow-400 text-black"
@@ -184,7 +178,6 @@ export default function TaskDetail() {
           {task.is_completed ? "Mark as Active" : "Mark as Completed"}
         </button>
 
-        {/* Delete */}
         <button onClick={handleDelete}
           className="w-full py-4 rounded-2xl text-sm font-semibold text-red-400 bg-gray-950 border border-gray-800 hover:border-red-800 transition-all flex items-center justify-center gap-2">
           <Trash2 size={18} />

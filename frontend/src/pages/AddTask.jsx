@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Calendar, Flag, Bell, Tag } from "lucide-react";
-import { useTasks } from "../hooks/use-tasks.hook";
+import { useTasks } from "../hooks/useTasks";
 import { scheduleReminder } from "../utils/helpers";
 
 export default function AddTask() {
